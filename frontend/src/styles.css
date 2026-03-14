@@ -1,0 +1,172 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f7fb;
+  color: #222;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.page-container {
+  max-width: 1100px;
+  margin: 30px auto;
+  padding: 0 16px 40px;
+}
+
+.navbar {
+  background: #1f3c88;
+  color: white;
+  padding: 14px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand {
+  font-size: 22px;
+  font-weight: bold;
+  color: white;
+}
+
+.nav-links {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.card {
+  background: white;
+  border-radius: 14px;
+  padding: 22px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+.center {
+  text-align: center;
+}
+
+.form {
+  display: grid;
+  gap: 12px;
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #cfd8e3;
+  border-radius: 10px;
+  font-size: 15px;
+}
+
+textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.btn,
+.small-btn {
+  border: none;
+  background: #1f3c88;
+  color: white;
+  cursor: pointer;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.btn {
+  padding: 12px 16px;
+  display: inline-block;
+}
+
+.small-btn {
+  padding: 9px 12px;
+}
+
+.secondary {
+  background: #556ee6;
+}
+
+.success {
+  background: #148f5a;
+}
+
+.danger {
+  background: #c0392b;
+}
+
+.disabled {
+  background: #888;
+  cursor: not-allowed;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+}
+
+.wrap {
+  flex-wrap: wrap;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.list {
+  display: grid;
+  gap: 14px;
+}
+
+.item {
+  border: 1px solid #e2e8f0;
+  padding: 16px;
+  border-radius: 12px;
+  background: #fafcff;
+}
+
+.stat-box {
+  background: #eef4ff;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+}
+
+.message {
+  margin-top: 10px;
+  color: #1f3c88;
+  font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .grid-2,
+  .grid-4 {
+    grid-template-columns: 1fr;
+  }
+
+  .navbar {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .row {
+    flex-direction: column;
+  }
+}
