@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-
+import GlobalHeader from "./components/GlobalHeader";
 import Home from "./pages/Home";
 import RoleSelect from "./pages/RoleSelect";
 import StudentSignup from "./pages/StudentSignup";
@@ -21,6 +21,8 @@ import StudentDrives from "./pages/StudentDrives";
 function App() {
   return (
     <BrowserRouter>
+       {/* ✅ ADD THIS LINE */}
+      <GlobalHeader />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/role" element={<RoleSelect />} />
