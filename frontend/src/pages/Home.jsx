@@ -1,16 +1,29 @@
 import { Link } from "react-router-dom";
+import logo from "../assets/vnrvjiet-logo.png";
 
 export default function Home() {
   return (
-    <div className="card center">
-      <h1>Placement Management Portal</h1>
-      <p>
-        A portal where students can complete their profile, view eligible drives,
-        apply for jobs, and track application status.
-      </p>
-      <Link to="/role" className="btn">
-        Get Started
-      </Link>
+    <div style={{ padding: "40px", textAlign: "center" }}>
+      
+      <img
+        src={logo}
+        alt="VNRVJIET Logo"
+        style={{ width: "120px", marginBottom: "20px" }}
+      />
+
+      <h1>Placement Portal</h1>
+      <p>Welcome to VNRVJIET Placement Portal</p>
+
     </div>
   );
 }
+<img
+  src={logo}
+  alt="Logo"
+  style={{
+    width: "120px",
+    borderRadius: "50%",
+    boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
+    marginBottom: "20px"
+  }}
+/>
