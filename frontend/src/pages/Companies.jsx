@@ -14,21 +14,28 @@ export default function Companies() {
   }, []);
 
   return (
-    <div>
-      <h2>Companies</h2>
+    <div className="content-stack">
+      <div>
+        <h2 className="page-title">Companies</h2>
+        <p className="page-subtitle">
+          Browse the companies and roles currently available in the portal.
+        </p>
+      </div>
 
-      {companies.map((c) => (
-        <div key={c._id} style={{ border: "1px solid #ddd", padding: "12px", marginBottom: "10px" }}>
-          <p><strong>{c.companyName}</strong></p>
-          <p>Role: {c.role}</p>
-          <p>Package: {c.package}</p>
-          <p>
-            Skills Required:{" "}
-            {Array.isArray(c.requiredSkills) ? c.requiredSkills.join(", ") : ""}
-          </p>
-          <p>Description: {c.description || "No description"}</p>
-        </div>
-      ))}
+      <div className="list">
+        {companies.map((c) => (
+          <div key={c._id} className="item">
+            <p><strong>{c.companyName}</strong></p>
+            <p>Role: {c.role}</p>
+            <p>Package: {c.package}</p>
+            <p>
+              Skills Required:{" "}
+              {Array.isArray(c.requiredSkills) ? c.requiredSkills.join(", ") : ""}
+            </p>
+            <p>Description: {c.description || "No description"}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

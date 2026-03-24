@@ -31,26 +31,41 @@ export default function DriveDetails() {
   };
 
   return (
-    <div>
-      <h2>Drive Applicants</h2>
-      {message && <p>{message}</p>}
+    <div className="content-stack">
+      <div>
+        <h2 className="page-title">Drive Applicants</h2>
+        <p className="page-subtitle">
+          Review and update the status of applicants for this drive.
+        </p>
+      </div>
 
-      {applications.map((app) => (
-        <div
-          key={app._id}
-          style={{ border: "1px solid #ddd", padding: "12px", marginBottom: "12px" }}
-        >
-          <p><strong>{app.student?.name || "No Name"}</strong></p>
-          <p>Roll No: {app.student?.rollNumber}</p>
-          <p>Email: {app.student?.email}</p>
-          <p>Branch: {app.student?.branch}</p>
-          <p>Current Status: {app.status}</p>
+      {message && <p className="message">{message}</p>}
 
-          <button onClick={() => updateStatus(app._id, "Shortlisted")}>Shortlist</button>
-          <button onClick={() => updateStatus(app._id, "Selected")}>Select</button>
-          <button onClick={() => updateStatus(app._id, "Rejected")}>Reject</button>
-        </div>
-      ))}
+      <div className="list">
+        {applications.map((app) => (
+          <div key={app._id} className="item">
+            <p><strong>{app.student?.name || "No Name"}</strong></p>
+            <p>Roll No: {app.student?.rollNumber}</p>
+            <p>Email: {app.student?.email}</p>
+            <p>Branch: {app.student?.branch}</p>
+            <p>
+              Current Status: <span className="status-pill">{app.status}</span>
+            </p>
+
+            <div className="toolbar" style={{ marginTop: "12px" }}>
+              <button onClick={() => updateStatus(app._id, "Shortlisted")}>
+                Shortlist
+              </button>
+              <button className="success" onClick={() => updateStatus(app._id, "Selected")}>
+                Select
+              </button>
+              <button className="danger" onClick={() => updateStatus(app._id, "Rejected")}>
+                Reject
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

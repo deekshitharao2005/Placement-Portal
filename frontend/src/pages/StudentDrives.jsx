@@ -29,42 +29,43 @@ export default function StudentDrives() {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>Eligible Drives</h2>
+    <div className="page-container content-stack">
+      <div>
+        <h2 className="page-title">Eligible Drives</h2>
+        <p className="page-subtitle">
+          View all opportunities that match your current profile.
+        </p>
+      </div>
 
-      {message && <p>{message}</p>}
+      {message && <p className="message">{message}</p>}
 
       {drives.length === 0 ? (
-        <p>No eligible drives available.</p>
+        <div className="card">
+          <p className="muted">No eligible drives available.</p>
+        </div>
       ) : (
-        drives.map((d) => (
-          <div
-            key={d._id}
-            style={{
-              border: "1px solid #ddd",
-              padding: "14px",
-              marginBottom: "14px",
-              borderRadius: "8px",
-            }}
-          >
-            <h3>{d.companyName}</h3>
-            <p>Role: {d.role}</p>
-            <p>Package: {d.package}</p>
-            <p>Description: {d.description || "No description provided"}</p>
-            <p>Min CGPA: {d.minCGPA}</p>
-            <p>Max Backlogs: {d.maxBacklogs}</p>
-            <p>
-              Allowed Branches: {d.allowedBranches?.length ? d.allowedBranches.join(", ") : "All"}
-            </p>
-            <p>
-              Required Skills: {d.requiredSkills?.length ? d.requiredSkills.join(", ") : "None"}
-            </p>
+        <div className="list">
+          {drives.map((d) => (
+            <div key={d._id} className="item">
+              <h3>{d.companyName}</h3>
+              <p>Role: {d.role}</p>
+              <p>Package: {d.package}</p>
+              <p>Description: {d.description || "No description provided"}</p>
+              <p>Min CGPA: {d.minCGPA}</p>
+              <p>Max Backlogs: {d.maxBacklogs}</p>
+              <p>
+                Allowed Branches: {d.allowedBranches?.length ? d.allowedBranches.join(", ") : "All"}
+              </p>
+              <p>
+                Required Skills: {d.requiredSkills?.length ? d.requiredSkills.join(", ") : "None"}
+              </p>
 
-            <button onClick={() => applyToDrive(d._id)} disabled={d.hasApplied}>
-              {d.hasApplied ? "Already Applied" : "Apply"}
-            </button>
-          </div>
-        ))
+              <button onClick={() => applyToDrive(d._id)} disabled={d.hasApplied}>
+                {d.hasApplied ? "Already Applied" : "Apply"}
+              </button>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );

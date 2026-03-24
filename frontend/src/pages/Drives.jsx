@@ -68,88 +68,96 @@ export default function Drives() {
   };
 
   return (
-    <div>
-      <h2>Drives</h2>
-      {message && <p>{message}</p>}
+    <div className="content-stack">
+      <div>
+        <h2 className="page-title">Drives</h2>
+        <p className="page-subtitle">
+          Create, manage, and review active placement drives.
+        </p>
+      </div>
 
-      <form onSubmit={createDrive} style={{ display: "grid", gap: "10px", marginBottom: "24px" }}>
-        <input
-          name="companyName"
-          placeholder="Company"
-          value={form.companyName}
-          onChange={handleChange}
-          required
-        />
-        <input
-          name="role"
-          placeholder="Role"
-          value={form.role}
-          onChange={handleChange}
-          required
-        />
-        <input
-          name="package"
-          placeholder="Package"
-          value={form.package}
-          onChange={handleChange}
-          required
-        />
-        <input
-          name="requiredSkills"
-          placeholder="Skills required comma separated"
-          value={form.requiredSkills}
-          onChange={handleChange}
-        />
-        <textarea
-          name="description"
-          placeholder="Job description (optional)"
-          value={form.description}
-          onChange={handleChange}
-        />
-        <input
-          name="minCGPA"
-          placeholder="Minimum CGPA"
-          value={form.minCGPA}
-          onChange={handleChange}
-        />
-        <input
-          name="allowedBranches"
-          placeholder="Allowed branches comma separated"
-          value={form.allowedBranches}
-          onChange={handleChange}
-        />
-        <input
-          name="maxBacklogs"
-          placeholder="Max backlogs"
-          value={form.maxBacklogs}
-          onChange={handleChange}
-        />
-        <button type="submit">Create Drive</button>
-      </form>
+      {message && <p className="message">{message}</p>}
 
-      {drives.map((d) => (
-        <div
-          key={d._id}
-          style={{ border: "1px solid #ddd", padding: "12px", marginBottom: "12px" }}
-        >
-          <p><strong>{d.companyName}</strong></p>
-          <p>Role: {d.role}</p>
-          <p>Package: {d.package}</p>
-          <p>
-            Skills: {Array.isArray(d.requiredSkills) ? d.requiredSkills.join(", ") : ""}
-          </p>
-          <p>Description: {d.description || "No description"}</p>
+      <div className="card">
+        <h3>Create Drive</h3>
+        <form onSubmit={createDrive} className="form">
+          <input
+            name="companyName"
+            placeholder="Company"
+            value={form.companyName}
+            onChange={handleChange}
+            required
+          />
+          <input
+            name="role"
+            placeholder="Role"
+            value={form.role}
+            onChange={handleChange}
+            required
+          />
+          <input
+            name="package"
+            placeholder="Package"
+            value={form.package}
+            onChange={handleChange}
+            required
+          />
+          <input
+            name="requiredSkills"
+            placeholder="Skills required comma separated"
+            value={form.requiredSkills}
+            onChange={handleChange}
+          />
+          <textarea
+            name="description"
+            placeholder="Job description (optional)"
+            value={form.description}
+            onChange={handleChange}
+          />
+          <input
+            name="minCGPA"
+            placeholder="Minimum CGPA"
+            value={form.minCGPA}
+            onChange={handleChange}
+          />
+          <input
+            name="allowedBranches"
+            placeholder="Allowed branches comma separated"
+            value={form.allowedBranches}
+            onChange={handleChange}
+          />
+          <input
+            name="maxBacklogs"
+            placeholder="Max backlogs"
+            value={form.maxBacklogs}
+            onChange={handleChange}
+          />
+          <button type="submit">Create Drive</button>
+        </form>
+      </div>
 
-          <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
-            <button onClick={() => navigate(`/admin/drives/${d._id}`)}>
-              View Applicants
-            </button>
-            <button onClick={() => deleteDrive(d._id)}>
-              Delete Drive
-            </button>
+      <div className="list">
+        {drives.map((d) => (
+          <div key={d._id} className="item">
+            <p><strong>{d.companyName}</strong></p>
+            <p>Role: {d.role}</p>
+            <p>Package: {d.package}</p>
+            <p>
+              Skills: {Array.isArray(d.requiredSkills) ? d.requiredSkills.join(", ") : ""}
+            </p>
+            <p>Description: {d.description || "No description"}</p>
+
+            <div className="toolbar" style={{ marginTop: "10px" }}>
+              <button onClick={() => navigate(`/admin/drives/${d._id}`)}>
+                View Applicants
+              </button>
+              <button className="danger" onClick={() => deleteDrive(d._id)}>
+                Delete Drive
+              </button>
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
