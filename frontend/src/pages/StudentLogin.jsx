@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../api";
+import API from "../api/api";
 
 export default function StudentLogin() {
   const navigate = useNavigate();
@@ -18,7 +18,7 @@ export default function StudentLogin() {
     setMessage("");
 
     try {
-      const res = await api.post("/student/login", form);
+      const res = await API.post("/student/login", form);
 
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("role", res.data.role);
@@ -29,7 +29,16 @@ export default function StudentLogin() {
         navigate("/student/profile");
       }
     } catch (error) {
-      setMessage(error.response?.data?.message || "Login failed");
+      const status = error.response?.status;
+      const errorMessage = error.response?.data?.message || "Login failed";
+
+      setMessage(errorMessage);
+
+      if (status === 403) {
+        navigate("/student/verify-otp", {
+          state: { rollNumber: form.rollNumber },
+        });
+      }
     }
   };
 

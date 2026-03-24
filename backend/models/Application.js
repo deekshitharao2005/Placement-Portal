@@ -17,10 +17,18 @@ const applicationSchema = new mongoose.Schema(
       enum: ["Applied", "Shortlisted", "Selected", "Rejected"],
       default: "Applied",
     },
+
+    // ADD THESE
+    resumeUrl: {
+      type: String,
+      default: "",
+    },
+    resumeOriginalName: {
+      type: String,
+      default: "",
+    },
   },
   { timestamps: true }
 );
-
-applicationSchema.index({ student: 1, drive: 1 }, { unique: true });
 
 module.exports = mongoose.model("Application", applicationSchema);

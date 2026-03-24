@@ -1,3 +1,5 @@
+const path = require("path");
+const fs = require("fs");
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
@@ -29,4 +31,11 @@ app.use("/api/dashboard", require("./routes/dashboardRoutes"));
 app.use("/api/admin-management", require("./routes/adminManagementRoutes"));
 
 const PORT = process.env.PORT || 5000;
+const uploadsDir = path.join(__dirname, "uploads", "resumes");
+
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

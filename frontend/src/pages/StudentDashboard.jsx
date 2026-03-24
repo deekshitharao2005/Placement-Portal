@@ -7,7 +7,11 @@ export default function StudentDashboard() {
   const [eligibleDrives, setEligibleDrives] = useState([]);
   const [student, setStudent] = useState(null);
   const [message, setMessage] = useState("");
+  const [resumeFiles, setResumeFiles] = useState({});
   const navigate = useNavigate();
+
+  const API_BASE =
+    import.meta.env.VITE_API_URL?.replace("/api", "") || "http://localhost:5000";
 
   const fetchStudent = async () => {
     try {
@@ -42,10 +46,35 @@ export default function StudentDashboard() {
     fetchEligibleDrives();
   }, []);
 
+  const handleResumeChange = (driveId, file) => {
+    setResumeFiles((prev) => ({
+      ...prev,
+      [driveId]: file || null,
+    }));
+  };
+
   const applyToDrive = async (driveId) => {
     try {
-      const res = await API.post("/applications", { driveId });
+      const formData = new FormData();
+      formData.append("driveId", driveId);
+
+      if (resumeFiles[driveId]) {
+        formData.append("resume", resumeFiles[driveId]);
+      }
+
+      const res = await API.post("/applications", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
       setMessage(res.data.message);
+
+      setResumeFiles((prev) => ({
+        ...prev,
+        [driveId]: null,
+      }));
+
       fetchApplications();
       fetchEligibleDrives();
     } catch (err) {
@@ -104,6 +133,32 @@ export default function StudentDashboard() {
               <p>Role: {drive.role}</p>
               <p>Package: {drive.package}</p>
               <p>Description: {drive.description || "No description provided"}</p>
+
+              <div style={{ marginTop: "10px", marginBottom: "10px" }}>
+                <label
+                  style={{
+                    display: "block",
+                    marginBottom: "6px",
+                    fontWeight: "500",
+                  }}
+                >
+                  Upload CV (optional, PDF only)
+                </label>
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={(e) =>
+                    handleResumeChange(drive._id, e.target.files?.[0] || null)
+                  }
+                  disabled={drive.hasApplied}
+                />
+                {resumeFiles[drive._id] && !drive.hasApplied && (
+                  <p style={{ marginTop: "6px", fontSize: "14px" }}>
+                    Selected: {resumeFiles[drive._id].name}
+                  </p>
+                )}
+              </div>
+
               <button
                 onClick={() => applyToDrive(drive._id)}
                 disabled={drive.hasApplied}
@@ -134,6 +189,21 @@ export default function StudentDashboard() {
               <p>Role: {app.drive?.role}</p>
               <p>Package: {app.drive?.package}</p>
               <p>Status: {app.status}</p>
+
+              {app.resumeUrl ? (
+                <p>
+                  Resume:{" "}
+                  <a
+                    href={`${API_BASE}${app.resumeUrl}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {app.resumeOriginalName || "View Uploaded Resume"}
+                  </a>
+                </p>
+              ) : (
+                <p>Resume: Not uploaded</p>
+              )}
             </div>
           ))
         )}

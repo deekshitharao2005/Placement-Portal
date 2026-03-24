@@ -16,6 +16,9 @@ export default function Students() {
     workExperience: "",
   });
 
+  const API_BASE =
+    import.meta.env.VITE_API_URL?.replace("/api", "") || "http://localhost:5000";
+
   const fetchStudents = async () => {
     try {
       const res = await API.get("/admin-management/students-with-applications");
@@ -71,7 +74,9 @@ export default function Students() {
       setMessage(`Application marked as ${status}`);
       fetchStudents();
     } catch (err) {
-      setMessage(err.response?.data?.message || "Failed to update application status");
+      setMessage(
+        err.response?.data?.message || "Failed to update application status"
+      );
     }
   };
 
@@ -177,7 +182,10 @@ export default function Students() {
           <p>Skills: {Array.isArray(s.skills) ? s.skills.join(", ") : ""}</p>
           <p>Status: {s.placementStatus}</p>
 
-          <button onClick={() => deleteStudent(s._id)} style={{ marginBottom: "14px" }}>
+          <button
+            onClick={() => deleteStudent(s._id)}
+            style={{ marginBottom: "14px" }}
+          >
             Delete
           </button>
 
@@ -205,7 +213,31 @@ export default function Students() {
                     Application Status: <strong>{app.status}</strong>
                   </p>
 
-                  <div style={{ display: "flex", gap: "10px", marginTop: "10px", flexWrap: "wrap" }}>
+                  {app.resumeUrl ? (
+                    <div style={{ marginTop: "8px" }}>
+                      <strong>Resume:</strong>{" "}
+                      <a
+                        href={`${API_BASE}${app.resumeUrl}`}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {app.resumeOriginalName || "View PDF"}
+                      </a>
+                    </div>
+                  ) : (
+                    <div style={{ marginTop: "8px" }}>
+                      <strong>Resume:</strong> Not uploaded
+                    </div>
+                  )}
+
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "10px",
+                      marginTop: "10px",
+                      flexWrap: "wrap",
+                    }}
+                  >
                     <button
                       onClick={() => updateApplicationStatus(app._id, "Shortlisted")}
                       style={statusButtonStyle(app.status, "Shortlisted")}

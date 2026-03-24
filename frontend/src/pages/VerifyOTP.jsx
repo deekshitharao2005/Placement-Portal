@@ -31,6 +31,8 @@ export default function VerifyOTP() {
   };
 
   const resendOtp = async () => {
+    setMessage("");
+
     try {
       const res = await API.post("/student/resend-otp", {
         rollNumber: form.rollNumber,
@@ -42,9 +44,10 @@ export default function VerifyOTP() {
   };
 
   return (
-    <div>
+    <div className="card">
       <h2>Verify OTP</h2>
-      <form onSubmit={verifyOtp}>
+
+      <form onSubmit={verifyOtp} className="form">
         <input
           name="rollNumber"
           placeholder="Roll Number"
@@ -59,12 +62,14 @@ export default function VerifyOTP() {
           onChange={handleChange}
           required
         />
-        <button type="submit">Verify OTP</button>
+        <button type="submit" className="btn">Verify OTP</button>
       </form>
 
-      <button onClick={resendOtp}>Resend OTP</button>
+      <button onClick={resendOtp} className="btn" style={{ marginTop: "10px" }}>
+        Resend OTP
+      </button>
 
-      {message && <p>{message}</p>}
+      {message && <p className="message">{message}</p>}
     </div>
   );
 }

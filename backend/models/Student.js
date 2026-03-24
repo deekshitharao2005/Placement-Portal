@@ -14,12 +14,11 @@ const studentSchema = new mongoose.Schema(
       required: true,
     },
     email: {
-      type: String,
-      required: true,
-      default:"",
-      trim: true,
-      lowercase: true,
-    },
+  type: String,
+  default: "",
+  trim: true,
+  lowercase: true,
+},
     emailVerified: {
       type: Boolean,
       default: false,

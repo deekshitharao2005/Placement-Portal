@@ -16,22 +16,38 @@ export default function StudentSignup() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setMessage("");
+  e.preventDefault();
+  setMessage("");
 
-    try {
-      const res = await API.post("/student/signup", form);
-      setMessage(res.data.message);
-      navigate("/student/verify-otp", { state: { rollNumber: form.rollNumber } });
-    } catch (err) {
-      setMessage(err.response?.data?.message || "Signup failed");
+  try {
+    const payload = {
+      rollNumber: form.rollNumber,
+      password: form.password,
+    };
+
+    if (form.email.trim()) {
+      payload.email = form.email.trim();
     }
-  };
+
+    const res = await API.post("/student/signup", payload);
+    setMessage(res.data.message);
+
+    if (res.data.emailRequiredForVerification) {
+      navigate("/student/verify-otp", {
+        state: { rollNumber: form.rollNumber },
+      });
+    } else {
+      navigate("/student/login");
+    }
+  } catch (err) {
+    setMessage(err.response?.data?.message || "Signup failed");
+  }
+};
 
   return (
-    <div>
+    <div className="card">
       <h2>Student Signup</h2>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="form">
         <input
           name="rollNumber"
           placeholder="Roll Number"
@@ -47,17 +63,17 @@ export default function StudentSignup() {
           onChange={handleChange}
           required
         />
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={form.email}
-          onChange={handleChange}
-          required
-        />
-        <button type="submit">Signup</button>
+       <input
+  type="email"
+  name="email"
+  placeholder="Email (optional)"
+  value={form.email}
+  onChange={handleChange}
+/>
+        <button type="submit" className="btn">Signup</button>
       </form>
-      {message && <p>{message}</p>}
+
+      {message && <p className="message">{message}</p>}
     </div>
   );
 }
