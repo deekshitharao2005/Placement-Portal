@@ -4,9 +4,22 @@ import API from "../api/api";
 
 export default function DriveDetails() {
   const { id } = useParams();
+
   const [applications, setApplications] = useState([]);
+  const [drive, setDrive] = useState(null);
   const [message, setMessage] = useState("");
 
+  // 🔥 Fetch drive info
+  const fetchDrive = async () => {
+    try {
+      const res = await API.get(`/drives/${id}`);
+      setDrive(res.data);
+    } catch (err) {
+      console.log("Drive fetch error");
+    }
+  };
+
+  // 🔥 Fetch applicants
   const fetchApplicants = async () => {
     try {
       const res = await API.get(`/applications/drive/${id}`);
@@ -17,9 +30,11 @@ export default function DriveDetails() {
   };
 
   useEffect(() => {
+    fetchDrive();
     fetchApplicants();
   }, [id]);
 
+  // 🔥 Update status
   const updateStatus = async (applicationId, status) => {
     try {
       await API.put(`/applications/${applicationId}/status`, { status });
@@ -31,35 +46,121 @@ export default function DriveDetails() {
   };
 
   return (
-    <div className="content-stack">
-      <div>
-        <h2 className="page-title">Drive Applicants</h2>
-        <p className="page-subtitle">
-          Review and update the status of applicants for this drive.
-        </p>
-      </div>
+    <div style={{ padding: "30px" }}>
+      {/* ================= DRIVE INFO ================= */}
+      {drive && (
+        <div
+          style={{
+            background: "#1e293b",
+            color: "white",
+            padding: "20px",
+            borderRadius: "12px",
+            marginBottom: "30px",
+          }}
+        >
+          <h2>{drive.title}</h2>
+          <p>{drive.companyName}</p>
+          <p>{new Date(drive.date).toDateString()}</p>
 
-      {message && <p className="message">{message}</p>}
+          {drive.image && (
+            <img
+              src={drive.image}
+              alt="drive"
+              style={{
+                width: "100%",
+                maxHeight: "250px",
+                objectFit: "cover",
+                borderRadius: "10px",
+                marginTop: "10px",
+              }}
+            />
+          )}
+        </div>
+      )}
 
-      <div className="list">
+      {/* ================= HEADER ================= */}
+      <h2>Applicants</h2>
+      {message && <p style={{ color: "red" }}>{message}</p>}
+
+      {/* ================= APPLICANTS ================= */}
+      <div style={{ display: "grid", gap: "15px" }}>
+        {applications.length === 0 && <p>No applicants yet</p>}
+
         {applications.map((app) => (
-          <div key={app._id} className="item">
-            <p><strong>{app.student?.name || "No Name"}</strong></p>
-            <p>Roll No: {app.student?.rollNumber}</p>
-            <p>Email: {app.student?.email}</p>
-            <p>Branch: {app.student?.branch}</p>
+          <div
+            key={app._id}
+            style={{
+              padding: "20px",
+              borderRadius: "12px",
+              background: "#f8fafc",
+              boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
+            }}
+          >
+            <h3>{app.student?.name || "No Name"}</h3>
+
+            <p><strong>Roll:</strong> {app.student?.rollNumber}</p>
+            <p><strong>Email:</strong> {app.student?.email}</p>
+            <p><strong>Branch:</strong> {app.student?.branch}</p>
+
             <p>
-              Current Status: <span className="status-pill">{app.status}</span>
+              <strong>Status:</strong>{" "}
+              <span
+                style={{
+                  padding: "5px 10px",
+                  borderRadius: "20px",
+                  background:
+                    app.status === "Selected"
+                      ? "#16a34a"
+                      : app.status === "Rejected"
+                      ? "#dc2626"
+                      : app.status === "Shortlisted"
+                      ? "#f59e0b"
+                      : "#64748b",
+                  color: "white",
+                }}
+              >
+                {app.status}
+              </span>
             </p>
 
-            <div className="toolbar" style={{ marginTop: "12px" }}>
-              <button onClick={() => updateStatus(app._id, "Shortlisted")}>
+            {/* ================= BUTTONS ================= */}
+            <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+              <button
+                onClick={() => updateStatus(app._id, "Shortlisted")}
+                style={{
+                  padding: "8px 12px",
+                  background: "#f59e0b",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "6px",
+                }}
+              >
                 Shortlist
               </button>
-              <button className="success" onClick={() => updateStatus(app._id, "Selected")}>
+
+              <button
+                onClick={() => updateStatus(app._id, "Selected")}
+                style={{
+                  padding: "8px 12px",
+                  background: "#16a34a",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "6px",
+                }}
+              >
                 Select
               </button>
-              <button className="danger" onClick={() => updateStatus(app._id, "Rejected")}>
+
+              <button
+                onClick={() => updateStatus(app._id, "Rejected")}
+                style={{
+                  padding: "8px 12px",
+                  background: "#dc2626",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "6px",
+                }}
+              >
                 Reject
               </button>
             </div>

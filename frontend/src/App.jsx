@@ -8,7 +8,7 @@ import VerifyOTP from "./pages/VerifyOTP";
 import StudentProfile from "./pages/StudentProfile";
 import StudentDashboard from "./pages/StudentDashboard";
 import AdminLogin from "./pages/AdminLogin";
-
+import StudentReport from "./pages/StudentReport";
 import AdminLayout from "./components/AdminLayout";
 import Dashboard from "./pages/Dashboard";
 import Students from "./pages/Students";
@@ -43,6 +43,7 @@ function App() {
           <Route path="drives" element={<Drives />} />
           <Route path="drives/:id" element={<DriveDetails />} />
           <Route path="reports" element={<Reports />} />
+          <Route path="report" element={<StudentReport />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

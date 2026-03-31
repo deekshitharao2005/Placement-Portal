@@ -5,7 +5,10 @@ import API from "../api/api";
 export default function Drives() {
   const [drives, setDrives] = useState([]);
   const [form, setForm] = useState({
+    title: "",
     companyName: "",
+    image: "",
+    date: "",
     role: "",
     package: "",
     requiredSkills: "",
@@ -21,7 +24,7 @@ export default function Drives() {
     try {
       const res = await API.get("/drives");
       setDrives(res.data);
-    } catch (err) {
+    } catch {
       setMessage("Failed to fetch drives");
     }
   };
@@ -41,7 +44,10 @@ export default function Drives() {
     try {
       await API.post("/drives", form);
       setForm({
+        title: "",
         companyName: "",
+        image: "",
+        date: "",
         role: "",
         package: "",
         requiredSkills: "",
@@ -80,14 +86,39 @@ export default function Drives() {
 
       <div className="card">
         <h3>Create Drive</h3>
+
         <form onSubmit={createDrive} className="form">
           <input
+            name="title"
+            placeholder="Drive title"
+            value={form.title}
+            onChange={handleChange}
+            required
+          />
+
+          <input
             name="companyName"
-            placeholder="Company"
+            placeholder="Company name"
             value={form.companyName}
             onChange={handleChange}
             required
           />
+
+          <input
+            name="image"
+            placeholder="Company logo / image URL"
+            value={form.image}
+            onChange={handleChange}
+          />
+
+          <input
+            type="date"
+            name="date"
+            value={form.date}
+            onChange={handleChange}
+            required
+          />
+
           <input
             name="role"
             placeholder="Role"
@@ -95,6 +126,7 @@ export default function Drives() {
             onChange={handleChange}
             required
           />
+
           <input
             name="package"
             placeholder="Package"
@@ -102,36 +134,42 @@ export default function Drives() {
             onChange={handleChange}
             required
           />
+
           <input
             name="requiredSkills"
             placeholder="Skills required comma separated"
             value={form.requiredSkills}
             onChange={handleChange}
           />
+
           <textarea
             name="description"
-            placeholder="Job description (optional)"
+            placeholder="Job description"
             value={form.description}
             onChange={handleChange}
           />
+
           <input
             name="minCGPA"
             placeholder="Minimum CGPA"
             value={form.minCGPA}
             onChange={handleChange}
           />
+
           <input
             name="allowedBranches"
             placeholder="Allowed branches comma separated"
             value={form.allowedBranches}
             onChange={handleChange}
           />
+
           <input
             name="maxBacklogs"
             placeholder="Max backlogs"
             value={form.maxBacklogs}
             onChange={handleChange}
           />
+
           <button type="submit">Create Drive</button>
         </form>
       </div>
@@ -139,13 +177,27 @@ export default function Drives() {
       <div className="list">
         {drives.map((d) => (
           <div key={d._id} className="item">
-            <p><strong>{d.companyName}</strong></p>
+            {d.image && (
+              <img
+                src={d.image}
+                alt={d.companyName}
+                style={{
+                  width: "70px",
+                  height: "70px",
+                  objectFit: "contain",
+                  borderRadius: "10px",
+                  marginBottom: "10px",
+                  background: "#fff",
+                  padding: "6px",
+                }}
+              />
+            )}
+
+            <p><strong>{d.title}</strong></p>
+            <p>Company: {d.companyName}</p>
+            <p>Date: {d.date ? new Date(d.date).toDateString() : "N/A"}</p>
             <p>Role: {d.role}</p>
             <p>Package: {d.package}</p>
-            <p>
-              Skills: {Array.isArray(d.requiredSkills) ? d.requiredSkills.join(", ") : ""}
-            </p>
-            <p>Description: {d.description || "No description"}</p>
 
             <div className="toolbar" style={{ marginTop: "10px" }}>
               <button onClick={() => navigate(`/admin/drives/${d._id}`)}>

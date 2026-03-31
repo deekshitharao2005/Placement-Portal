@@ -10,8 +10,9 @@ export default function StudentLogin() {
   });
   const [message, setMessage] = useState("");
 
-  const handleChange = (e) =>
+  const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,22 +24,9 @@ export default function StudentLogin() {
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("role", res.data.role);
 
-      if (res.data.student.profileCompleted) {
-        navigate("/student/dashboard");
-      } else {
-        navigate("/student/profile");
-      }
+      navigate("/student/dashboard");
     } catch (error) {
-      const status = error.response?.status;
-      const errorMessage = error.response?.data?.message || "Login failed";
-
-      setMessage(errorMessage);
-
-      if (status === 403) {
-        navigate("/student/verify-otp", {
-          state: { rollNumber: form.rollNumber },
-        });
-      }
+      setMessage(error.response?.data?.message || "Login failed");
     }
   };
 

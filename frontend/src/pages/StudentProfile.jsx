@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api/api";
 
 export default function StudentProfile() {
   const navigate = useNavigate();
+
   const [form, setForm] = useState({
     name: "",
     branch: "",
@@ -13,24 +14,29 @@ export default function StudentProfile() {
     skills: "",
     workExperience: "",
   });
+
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    const role = localStorage.getItem("role");
     const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
 
-    if (!token || role !== "student") {
+    if (!token || role?.toLowerCase() !== "student") {
       navigate("/student/login");
       return;
     }
 
-    fetchStudentProfile();
+    fetchProfile();
   }, [navigate]);
 
-  const fetchStudentProfile = async () => {
+  const fetchProfile = async () => {
     try {
+      setLoading(true);
       const res = await API.get("/student/me");
-      const student = res.data;
+
+      const student = res.data || {};
 
       setForm({
         name: student.name || "",
@@ -38,11 +44,15 @@ export default function StudentProfile() {
         cgpa: student.cgpa ?? "",
         backlogs: student.backlogs ?? "",
         year: student.year ?? "",
-        skills: Array.isArray(student.skills) ? student.skills.join(", ") : "",
+        skills: Array.isArray(student.skills)
+          ? student.skills.join(", ")
+          : student.skills || "",
         workExperience: student.workExperience || "",
       });
     } catch (error) {
-      console.log("Failed to load student profile", error);
+      setMessage(error.response?.data?.message || "Failed to load profile");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -55,91 +65,89 @@ export default function StudentProfile() {
     setMessage("");
 
     try {
+      setSaving(true);
+
       const payload = {
         ...form,
         cgpa: Number(form.cgpa),
         backlogs: Number(form.backlogs),
         year: Number(form.year),
+        skills: form.skills,
       };
 
-      const res = await API.put("/student/profile", payload);
-      setMessage(res.data.message || "Profile updated successfully");
-      setTimeout(() => navigate("/student/dashboard"), 1000);
+      await API.put("/student/profile", payload);
+      setMessage("Profile updated successfully");
     } catch (error) {
-      setMessage(error.response?.data?.message || "Profile update failed");
+      setMessage(error.response?.data?.message || "Failed to update profile");
+    } finally {
+      setSaving(false);
     }
   };
 
-  return (
-    <div className="card">
-      <h2>Complete Student Profile</h2>
+  if (loading) {
+    return <p>Loading profile...</p>;
+  }
 
-      <form onSubmit={handleSubmit} className="form">
+  return (
+    <div>
+      <h2>Student Profile</h2>
+      {message && <p>{message}</p>}
+
+      <form onSubmit={handleSubmit} style={{ display: "grid", gap: "12px", maxWidth: "500px" }}>
         <input
+          type="text"
           name="name"
-          placeholder="Full Name"
+          placeholder="Name"
           value={form.name}
           onChange={handleChange}
-          required
         />
-
         <input
+          type="text"
           name="branch"
-          placeholder="Branch (example: CSE)"
+          placeholder="Branch"
           value={form.branch}
           onChange={handleChange}
-          required
         />
-
         <input
-          name="cgpa"
           type="number"
           step="0.01"
+          name="cgpa"
           placeholder="CGPA"
           value={form.cgpa}
           onChange={handleChange}
-          required
         />
-
         <input
-          name="backlogs"
           type="number"
-          placeholder="Number of Backlogs"
+          name="backlogs"
+          placeholder="Backlogs"
           value={form.backlogs}
           onChange={handleChange}
-          required
         />
-
         <input
-          name="year"
           type="number"
-          placeholder="Year of Study"
+          name="year"
+          placeholder="Year"
           value={form.year}
           onChange={handleChange}
-          required
         />
-
         <input
+          type="text"
           name="skills"
-          placeholder="Skills separated by commas (Java, Python, React)"
+          placeholder="Skills"
           value={form.skills}
           onChange={handleChange}
-          required
         />
-
-        <input
+        <textarea
           name="workExperience"
-          placeholder="Work Experience (Fresher / Internship / etc.)"
+          placeholder="Work Experience"
           value={form.workExperience}
           onChange={handleChange}
+          rows="4"
         />
-
-        <button type="submit" className="btn">
-          Save Profile
+        <button type="submit" disabled={saving}>
+          {saving ? "Saving..." : "Save Profile"}
         </button>
       </form>
-
-      {message && <p className="message">{message}</p>}
     </div>
   );
 }
