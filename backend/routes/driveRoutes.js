@@ -17,6 +17,7 @@ router.post("/", verifyToken, requireRole("admin"), async (req, res) => {
       role,
       package,
       description,
+      applicationLink,
       minCGPA,
       allowedBranches,
       maxBacklogs,
@@ -31,6 +32,7 @@ router.post("/", verifyToken, requireRole("admin"), async (req, res) => {
       role,
       package,
       description,
+      applicationLink,
       minCGPA: Number(minCGPA || 0),
       allowedBranches: Array.isArray(allowedBranches)
         ? allowedBranches
@@ -62,12 +64,10 @@ router.get("/", verifyToken, async (req, res) => {
   try {
     const drives = await Drive.find().sort({ createdAt: -1 });
 
-    // Admin can see all directly
     if (req.user.role === "admin") {
       return res.json(drives);
     }
 
-    // Student side
     const student = await Student.findById(req.user.id);
     if (!student) {
       return res.status(404).json({ message: "Student not found" });

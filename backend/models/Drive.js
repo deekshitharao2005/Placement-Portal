@@ -35,6 +35,11 @@ const driveSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    applicationLink: {
+      type: String,
+      default: "",
+      trim: true,
+    },
     minCGPA: {
       type: Number,
       default: 0,

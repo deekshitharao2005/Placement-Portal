@@ -59,6 +59,11 @@ export default function StudentDrives() {
     }
   };
 
+  const openApplicationLink = (link) => {
+    if (!link) return;
+    window.open(link, "_blank", "noopener,noreferrer");
+  };
+
   if (loading) {
     return <p>Loading drives...</p>;
   }
@@ -174,6 +179,10 @@ export default function StudentDrives() {
           <p style={styles.text}>
             <strong>Description:</strong> {selectedDrive.description || "N/A"}
           </p>
+          <p style={styles.text}>
+            <strong>Application Link:</strong>{" "}
+            {selectedDrive.applicationLink ? selectedDrive.applicationLink : "N/A"}
+          </p>
 
           {selectedDrive.alreadyApplied && (
             <p style={styles.appliedText}>
@@ -194,6 +203,15 @@ export default function StudentDrives() {
             >
               Back
             </button>
+
+            {selectedDrive.applicationLink && (
+              <button
+                style={styles.linkButton}
+                onClick={() => openApplicationLink(selectedDrive.applicationLink)}
+              >
+                Apply Here
+              </button>
+            )}
 
             <button
               style={{
@@ -327,51 +345,53 @@ const styles = {
   },
   detailsCard: {
     background: "#fff",
-    borderRadius: "16px",
+    borderRadius: "18px",
     padding: "24px",
-    boxShadow: "0 6px 20px rgba(15, 23, 42, 0.08)",
+    boxShadow: "0 10px 30px rgba(15, 23, 42, 0.08)",
   },
   detailImage: {
     width: "100%",
-    maxHeight: "260px",
+    maxWidth: "260px",
+    height: "180px",
     objectFit: "contain",
     borderRadius: "12px",
-    marginBottom: "16px",
     background: "#f8fafc",
     padding: "12px",
+    marginBottom: "18px",
   },
   detailPlaceholderLogo: {
     width: "100%",
-    maxHeight: "260px",
-    minHeight: "220px",
+    maxWidth: "260px",
+    height: "180px",
     borderRadius: "12px",
-    marginBottom: "16px",
+    marginBottom: "18px",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     background: "#e2e8f0",
     color: "#475569",
-    fontWeight: "700",
+    fontWeight: "600",
   },
   detailTitle: {
     fontSize: "24px",
     fontWeight: "700",
-    marginBottom: "16px",
+    marginBottom: "14px",
     color: "#0f172a",
   },
   appliedText: {
-    marginTop: "10px",
     color: "#166534",
     fontWeight: "700",
+    marginTop: "10px",
   },
   notEligibleText: {
-    marginTop: "10px",
     color: "#b91c1c",
     fontWeight: "700",
+    marginTop: "10px",
   },
   detailButtons: {
     display: "flex",
     gap: "12px",
+    flexWrap: "wrap",
     marginTop: "20px",
   },
   backButton: {
@@ -379,6 +399,15 @@ const styles = {
     border: "none",
     borderRadius: "10px",
     background: "#64748b",
+    color: "#fff",
+    fontWeight: "600",
+    cursor: "pointer",
+  },
+  linkButton: {
+    padding: "10px 16px",
+    border: "none",
+    borderRadius: "10px",
+    background: "#0f766e",
     color: "#fff",
     fontWeight: "600",
     cursor: "pointer",

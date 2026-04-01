@@ -13,6 +13,7 @@ export default function Drives() {
     package: "",
     requiredSkills: "",
     description: "",
+    applicationLink: "",
     minCGPA: "",
     allowedBranches: "",
     maxBacklogs: "",
@@ -52,6 +53,7 @@ export default function Drives() {
         package: "",
         requiredSkills: "",
         description: "",
+        applicationLink: "",
         minCGPA: "",
         allowedBranches: "",
         maxBacklogs: "",
@@ -150,6 +152,13 @@ export default function Drives() {
           />
 
           <input
+            name="applicationLink"
+            placeholder="External application link"
+            value={form.applicationLink}
+            onChange={handleChange}
+          />
+
+          <input
             name="minCGPA"
             placeholder="Minimum CGPA"
             value={form.minCGPA}
@@ -198,6 +207,7 @@ export default function Drives() {
             <p>Date: {d.date ? new Date(d.date).toDateString() : "N/A"}</p>
             <p>Role: {d.role}</p>
             <p>Package: {d.package}</p>
+            {d.applicationLink && <p>Application Link: {d.applicationLink}</p>}
 
             <div className="toolbar" style={{ marginTop: "10px" }}>
               <button onClick={() => navigate(`/admin/drives/${d._id}`)}>
