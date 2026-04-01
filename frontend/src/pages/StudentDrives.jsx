@@ -12,11 +12,31 @@ export default function StudentDrives() {
     fetchDrives();
   }, []);
 
-  const fetchDrives = async () => {
+  useEffect(() => {
+    if (!selectedDrive) return;
+
+    const interval = setInterval(() => {
+      fetchDrives(true);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [selectedDrive]);
+
+  const fetchDrives = async (preserveSelected = false) => {
     try {
-      setLoading(true);
+      setLoading(!preserveSelected);
       const res = await API.get("/drives");
-      setDrives(res.data);
+      const freshDrives = res.data;
+      setDrives(freshDrives);
+
+      if (preserveSelected && selectedDrive) {
+        const updatedSelectedDrive = freshDrives.find(
+          (drive) => drive._id === selectedDrive._id
+        );
+        if (updatedSelectedDrive) {
+          setSelectedDrive(updatedSelectedDrive);
+        }
+      }
     } catch (error) {
       setMessage("Failed to fetch drives");
     } finally {
@@ -39,19 +59,7 @@ export default function StudentDrives() {
 
       setMessage(res.data.message || "Applied successfully");
 
-      setDrives((prev) =>
-        prev.map((drive) =>
-          drive._id === driveId
-            ? { ...drive, alreadyApplied: true }
-            : drive
-        )
-      );
-
-      setSelectedDrive((prev) =>
-        prev && prev._id === driveId
-          ? { ...prev, alreadyApplied: true }
-          : prev
-      );
+      await fetchDrives(true);
     } catch (error) {
       setMessage(error.response?.data?.message || "Failed to apply");
     } finally {
@@ -62,6 +70,36 @@ export default function StudentDrives() {
   const openApplicationLink = (link) => {
     if (!link) return;
     window.open(link, "_blank", "noopener,noreferrer");
+  };
+
+  const getStatusBadgeStyle = (status) => {
+    switch (status) {
+      case "Selected":
+        return {
+          ...styles.statusBadge,
+          background: "#dcfce7",
+          color: "#166534",
+        };
+      case "Rejected":
+        return {
+          ...styles.statusBadge,
+          background: "#fee2e2",
+          color: "#991b1b",
+        };
+      case "Shortlisted":
+        return {
+          ...styles.statusBadge,
+          background: "#fef3c7",
+          color: "#92400e",
+        };
+      case "Applied":
+      default:
+        return {
+          ...styles.statusBadge,
+          background: "#dbeafe",
+          color: "#1d4ed8",
+        };
+    }
   };
 
   if (loading) {
@@ -106,10 +144,13 @@ export default function StudentDrives() {
                 </p>
 
                 <div style={styles.badgeRow}>
-                  {drive.alreadyApplied && (
-                    <span style={styles.appliedBadge}>Applied</span>
+                  {drive.applicationStatus && (
+                    <span style={getStatusBadgeStyle(drive.applicationStatus)}>
+                      {drive.applicationStatus}
+                    </span>
                   )}
-                  {drive.isEligible === false && (
+
+                  {drive.isEligible === false && !drive.applicationStatus && (
                     <span style={styles.notEligibleBadge}>Not Eligible</span>
                   )}
                 </div>
@@ -181,16 +222,18 @@ export default function StudentDrives() {
           </p>
           <p style={styles.text}>
             <strong>Application Link:</strong>{" "}
-            {selectedDrive.applicationLink ? selectedDrive.applicationLink : "N/A"}
+            {selectedDrive.applicationLink
+              ? selectedDrive.applicationLink
+              : "N/A"}
           </p>
 
-          {selectedDrive.alreadyApplied && (
+          {selectedDrive.applicationStatus && (
             <p style={styles.appliedText}>
-              You have already applied for this drive.
+              Current application status: {selectedDrive.applicationStatus}
             </p>
           )}
 
-          {selectedDrive.isEligible === false && (
+          {selectedDrive.isEligible === false && !selectedDrive.applicationStatus && (
             <p style={styles.notEligibleText}>
               You are not eligible for this drive.
             </p>
@@ -199,7 +242,10 @@ export default function StudentDrives() {
           <div style={styles.detailButtons}>
             <button
               style={styles.backButton}
-              onClick={() => setSelectedDrive(null)}
+              onClick={() => {
+                setSelectedDrive(null);
+                fetchDrives();
+              }}
             >
               Back
             </button>
@@ -217,23 +263,25 @@ export default function StudentDrives() {
               style={{
                 ...styles.applyButton,
                 opacity:
-                  selectedDrive.alreadyApplied || selectedDrive.isEligible === false
+                  selectedDrive.applicationStatus ||
+                  selectedDrive.isEligible === false
                     ? 0.6
                     : 1,
                 cursor:
-                  selectedDrive.alreadyApplied || selectedDrive.isEligible === false
+                  selectedDrive.applicationStatus ||
+                  selectedDrive.isEligible === false
                     ? "not-allowed"
                     : "pointer",
               }}
               disabled={
-                selectedDrive.alreadyApplied ||
+                !!selectedDrive.applicationStatus ||
                 selectedDrive.isEligible === false ||
                 applyingId === selectedDrive._id
               }
               onClick={() => applyToDrive(selectedDrive._id)}
             >
-              {selectedDrive.alreadyApplied
-                ? "Applied"
+              {selectedDrive.applicationStatus
+                ? selectedDrive.applicationStatus
                 : applyingId === selectedDrive._id
                 ? "Applying..."
                 : "Apply"}
@@ -315,9 +363,7 @@ const styles = {
     marginBottom: "10px",
     flexWrap: "wrap",
   },
-  appliedBadge: {
-    background: "#dcfce7",
-    color: "#166534",
+  statusBadge: {
     padding: "6px 10px",
     borderRadius: "999px",
     fontSize: "12px",

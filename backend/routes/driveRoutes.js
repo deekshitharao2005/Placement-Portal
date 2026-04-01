@@ -73,8 +73,13 @@ router.get("/", verifyToken, async (req, res) => {
       return res.status(404).json({ message: "Student not found" });
     }
 
-    const applications = await Application.find({ student: req.user.id }).select("drive");
-    const appliedDriveIds = applications.map((app) => String(app.drive));
+    const applications = await Application.find({ student: req.user.id }).select(
+      "drive status"
+    );
+
+    const applicationMap = new Map(
+      applications.map((app) => [String(app.drive), app.status])
+    );
 
     const enrichedDrives = drives.map((drive) => {
       let isEligible = true;
@@ -98,10 +103,13 @@ router.get("/", verifyToken, async (req, res) => {
         isEligible = false;
       }
 
+      const applicationStatus = applicationMap.get(String(drive._id)) || null;
+
       return {
         ...drive.toObject(),
         isEligible,
-        alreadyApplied: appliedDriveIds.includes(String(drive._id)),
+        alreadyApplied: !!applicationStatus,
+        applicationStatus,
       };
     });
 

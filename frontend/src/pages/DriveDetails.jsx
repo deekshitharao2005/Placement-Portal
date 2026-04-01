@@ -9,7 +9,6 @@ export default function DriveDetails() {
   const [drive, setDrive] = useState(null);
   const [message, setMessage] = useState("");
 
-  // 🔥 Fetch drive info
   const fetchDrive = async () => {
     try {
       const res = await API.get(`/drives/${id}`);
@@ -19,7 +18,6 @@ export default function DriveDetails() {
     }
   };
 
-  // 🔥 Fetch applicants
   const fetchApplicants = async () => {
     try {
       const res = await API.get(`/applications/drive/${id}`);
@@ -34,8 +32,13 @@ export default function DriveDetails() {
     fetchApplicants();
   }, [id]);
 
-  // 🔥 Update status
   const updateStatus = async (applicationId, status) => {
+    const confirmed = window.confirm(
+      `Are you sure you want to mark this student as ${status}?`
+    );
+
+    if (!confirmed) return;
+
     try {
       await API.put(`/applications/${applicationId}/status`, { status });
       setMessage(`Status changed to ${status}`);
@@ -47,7 +50,6 @@ export default function DriveDetails() {
 
   return (
     <div style={{ padding: "30px" }}>
-      {/* ================= DRIVE INFO ================= */}
       {drive && (
         <div
           style={{
@@ -78,11 +80,9 @@ export default function DriveDetails() {
         </div>
       )}
 
-      {/* ================= HEADER ================= */}
       <h2>Applicants</h2>
       {message && <p style={{ color: "red" }}>{message}</p>}
 
-      {/* ================= APPLICANTS ================= */}
       <div style={{ display: "grid", gap: "15px" }}>
         {applications.length === 0 && <p>No applicants yet</p>}
 
@@ -99,8 +99,8 @@ export default function DriveDetails() {
             <h3>{app.student?.name || "No Name"}</h3>
 
             <p><strong>Roll:</strong> {app.student?.rollNumber}</p>
-            <p><strong>Email:</strong> {app.student?.email}</p>
-            <p><strong>Branch:</strong> {app.student?.branch}</p>
+            <p><strong>Email:</strong> {app.student?.email || "N/A"}</p>
+            <p><strong>Branch:</strong> {app.student?.branch || "N/A"}</p>
 
             <p>
               <strong>Status:</strong>{" "}
@@ -123,8 +123,7 @@ export default function DriveDetails() {
               </span>
             </p>
 
-            {/* ================= BUTTONS ================= */}
-            <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+            <div style={{ display: "flex", gap: "10px", marginTop: "10px", flexWrap: "wrap" }}>
               <button
                 onClick={() => updateStatus(app._id, "Shortlisted")}
                 style={{
@@ -135,7 +134,7 @@ export default function DriveDetails() {
                   borderRadius: "6px",
                 }}
               >
-                Shortlist
+                Mark Shortlisted
               </button>
 
               <button
@@ -148,7 +147,7 @@ export default function DriveDetails() {
                   borderRadius: "6px",
                 }}
               >
-                Select
+                Mark Selected
               </button>
 
               <button
@@ -161,7 +160,7 @@ export default function DriveDetails() {
                   borderRadius: "6px",
                 }}
               >
-                Reject
+                Mark Rejected
               </button>
             </div>
           </div>
